@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Cycle 3.0 - Menu de Vídeos</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --primary-color: #34495e;
+            --secondary-color: #1abc9c;
+            --text-color: #333;
+            --bg-color: #f7f8fa;
+            --sidebar-bg: #34495e;
+            --content-bg: #ecf0f1;
+            --hover-color: #3498db;
+            --active-color: #2980b9;
+            --border-color: #bdc3c7;
+        }
+
+        .dark-mode {
+            --primary-color: #2c3e50;
+            --secondary-color: #16a085;
+            --text-color: #ecf0f1;
+            --bg-color: #2c3e50;
+            --sidebar-bg: #34495e;
+            --content-bg: #2c3e50;
+            --hover-color: #2980b9;
+            --active-color: #3498db;
+            --border-color: #7f8c8d;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: var(--sidebar-bg);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 60px;
+        }
+
+        .sidebar h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+
+        .menu-item {
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            margin: 5px 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .menu-item:hover {
+            background-color: var(--hover-color);
+        }
+
+        .video-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--content-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        video {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .active {
+            background-color: var(--active-color);
+        }
+
+        /* Estilo para o sumário */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .summary-table th,
+        .summary-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        .summary-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .font-size-controls {
+            display: flex;
+            gap: 10px;
+        }
+    </style>
+</head>
+<body id="body">
+
+    <!-- Botão para alternar tema -->
+    <div class="content">
+        <div class="top-bar">
+                <button id="toggle-theme" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700 center">
+                    Alternar Tema
+                </button>
+
+                <!-- Controles de tamanho da fonte -->
+                <div class="font-size-controls">
+                    <button id="decrease-font-size" class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-700">A-</button>
+                    <button id="increase-font-size" class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-700">A+</button>
+                </div>
+            </div>
+
+        <div class="flex min-h-screen">
+            
+            <!-- Sidebar -->
+            <div class="sidebar" id="sidebar">
+                <h1>Full Cycle 3.0</h1>
+                <div class="search-container">
+                    <input type="text" placeholder="Pesquisar..." id="search-input" onkeyup="searchContent()">
+                </div>
+                <h2 class="text-white">Seções Disponíveis</h2>
+                <div id="video-menu">
+                </div>
+            </div>
+
+            <!-- Conteúdo -->
+            <div class="flex-1 p-6">
+                <!-- Breadcrumbs -->
+                <div id="breadcrumbs" class="mb-4 text-gray-700 font-semibold"></div>
+
+                <!-- Navegação de vídeos -->
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-button" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700">Anterior</button>
+                    <h3 id="video-title" class="text-xl font-semibold">Selecione um vídeo</h3>
+                    <button id="next-button" class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700">Próximo</button>
+                </div>
+
+                <div class="video-container" id="video-container">
+                    <video id="video-player" controls>
+                        Seu navegador não suporta vídeos.
+                    </video>
+                    <textarea id="user-notes" class="mt-4 w-full p-2" placeholder="Digite suas notas aqui..."></textarea>
+                    <button id="save-notes" class="mt-2 px-4 py-2 bg-green-500 text-white rounded hover:bg-green-700">Salvar Notas</button>
+                </div>
+
+                <!-- Sumário -->
+                <div id="summary" class="mt-8 hidden">
+                    <h2 class="text-xl font-semibold">Sumário do Curso</h2>
+                    <table class="summary-table">
+                        <thead>
+                            <tr>
+                                <th>Categoria</th>
+                                <th>Quantidade</th>
+                                <th>Tamanho</th>
+                                <th>Detalhes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total de Arquivos</td>
+                                <td>315</td>
+                                <td>47 GB</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>Arquivos de Vídeo</td>
+                                <td>300</td>
+                                <td>47 GB</td>
+                                <td>Duração: 60 horas</td>
+                            </tr>
+                            <tr>
+                                <td>Arquivos de Texto</td>
+                                <td>15</td>
+                                <td>205 KB</td>
+                                <td>Linhas: 2,958</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Alternar entre modo claro e escuro
+        function toggleDarkMode() {
+            document.body.classList.toggle("dark-mode");
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+        document.getElementById("toggle-theme").addEventListener("click", toggleDarkMode);
+        // Definir o tema no carregamento
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+
+        // Carregar o menu de vídeos dinamicamente
+        async function loadVideos() {
+            const response = await fetch("http://localhost:8000/videos");
+            const data = await response.json();
+            const menu = document.getElementById("video-menu");
+            menu.innerHTML = ""; // Limpa o conteúdo anterior
+
+            Object.keys(data).forEach(module => {
+                let moduleDiv = document.createElement("div");
+                moduleDiv.classList.add("module", "border-b", "p-2", "cursor-pointer", "text-lg", "font-semibold", "text-white", "bg-gray-800", "rounded-md", "hover:bg-gray-700");
+
+                moduleDiv.innerHTML = `<span>${module}</span>`;
+
+                let sectionDiv = document.createElement("div");
+                sectionDiv.classList.add("ml-4", "hidden", "space-y-2");
+
+                Object.keys(data[module]).forEach(section => {
+                    let sectionItem = document.createElement("div");
+                    sectionItem.classList.add("section", "p-2", "cursor-pointer", "text-sm", "text-blue-400", "border-l-4", "border-blue-500", "hover:bg-gray-700", "rounded-md");
+
+                    sectionItem.innerHTML = `<span>${section}</span>`;
+
+                    let videoList = document.createElement("div");
+                    videoList.classList.add("ml-4", "hidden", "space-y-1");
+
+                    data[module][section].forEach(video => {
+                        let videoLink = document.createElement("a");
+                        videoLink.href = "#";
+                        videoLink.innerText = video;
+                        videoLink.classList.add("block", "p-1", "text-gray-300", "hover:text-white", "text-sm");
+                        videoLink.onclick = () => loadVideo(module, section, video);
+                        videoList.appendChild(videoLink);
+                    });
+
+                    sectionItem.onclick = () => {
+                        videoList.classList.toggle("hidden");
+                    };
+
+                    sectionItem.appendChild(videoList);
+                    sectionDiv.appendChild(sectionItem);
+                });
+
+                moduleDiv.onclick = () => {
+                    sectionDiv.classList.toggle("hidden");
+                };
+
+                moduleDiv.appendChild(sectionDiv);
+                menu.appendChild(moduleDiv);
+            });
+        }
+
+        let currentVideoIndex = 0;
+        let videoList = [];
+
+        // Carregar o vídeo selecionado
+        async function loadVideo(module, section, video) {
+            let videoPlayer = document.getElementById("video-player");
+            const encodedModule = encodeURIComponent(module);
+            const encodedSection = encodeURIComponent(section);
+            const encodedVideo = encodeURIComponent(video);
+
+            videoPlayer.src = `http://localhost:8000/static/${encodedModule}/${encodedSection}/${encodedVideo}`;
+            videoPlayer.play();
+
+            // Atualiza título do vídeo
+            document.getElementById("video-title").textContent = video;
+
+            // Carregar notas do vídeo
+            loadUserNotes(`${module}/${section}/${video}`);
+
+            // Exibir sumário
+            document.getElementById("summary").classList.remove("hidden");
+
+            // Atualizar breadcrumbs
+            document.getElementById("breadcrumbs").textContent = `Módulo: ${module} > Seção: ${section} > Vídeo: ${video}`;
+
+            videoList = Object.values(data[module][section]);
+            currentVideoIndex = videoList.indexOf(video);
+            updateNavigationButtons();
+        }
+
+        function updateNavigationButtons() {
+            document.getElementById("prev-button").disabled = currentVideoIndex <= 0;
+            document.getElementById("next-button").disabled = currentVideoIndex >= videoList.length - 1;
+        }
+
+        document.getElementById("prev-button").addEventListener("click", () => {
+            if (currentVideoIndex > 0) {
+                loadVideo(videoList[currentVideoIndex - 1]);
+            }
+        });
+
+        document.getElementById("next-button").addEventListener("click", () => {
+            if (currentVideoIndex < videoList.length - 1) {
+                loadVideo(videoList[currentVideoIndex + 1]);
+            }
+        });
+
+        // Salvar notas do usuário
+        document.getElementById("save-notes").addEventListener("click", () => {
+            var notes = document.getElementById('user-notes').value;
+            var currentVideo = document.getElementById("video-player").src;
+            localStorage.setItem(currentVideo, notes);
+            alert('Notas salvas com sucesso!');
+        });
+
+        // Carregar notas salvas
+        function loadUserNotes(path) {
+            var notes = localStorage.getItem(path) || '';
+            document.getElementById('user-notes').value = notes;
+        }
+
+        // Aumentar ou diminuir o tamanho da fonte
+        document.getElementById("increase-font-size").addEventListener("click", () => {
+            document.body.style.fontSize = "1.2rem";
+        });
+
+        document.getElementById("decrease-font-size").addEventListener("click", () => {
+            document.body.style.fontSize = "1rem";
+        });
+
+        // Iniciar a carga de vídeos
+        loadVideos();
+    </script>
+
+</body>
+</html>

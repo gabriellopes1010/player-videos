@@ -1,0 +1,61 @@
+[
+    {
+        "label": "Path",
+        "importPath": "pathlib",
+        "description": "pathlib",
+        "isExtraImport": true,
+        "detail": "pathlib",
+        "documentation": {}
+    },
+    {
+        "label": "FastAPI",
+        "importPath": "fastapi",
+        "description": "fastapi",
+        "isExtraImport": true,
+        "detail": "fastapi",
+        "documentation": {}
+    },
+    {
+        "label": "HTMLResponse",
+        "importPath": "fastapi.responses",
+        "description": "fastapi.responses",
+        "isExtraImport": true,
+        "detail": "fastapi.responses",
+        "documentation": {}
+    },
+    {
+        "label": "StaticFiles",
+        "importPath": "fastapi.staticfiles",
+        "description": "fastapi.staticfiles",
+        "isExtraImport": true,
+        "detail": "fastapi.staticfiles",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "natural_sort_key",
+        "kind": 2,
+        "importPath": "app.server",
+        "description": "app.server",
+        "peekOfCode": "def natural_sort_key(text):\n    \"\"\"Ordenação natural para considerar números corretamente\"\"\"\n    return [\n        int(part) if part.isdigit() else part.lower()\n        for part in re.split(r\"(\\d+)\", text)\n    ]\n@app.get(\"/videos\")\nasync def list_videos():\n    BASE_DIR = Path(\"/mnt/SSD/player_video_project/Full_Cycle_3.0\")\n    video_data = {}",
+        "detail": "app.server",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app.server",
+        "description": "app.server",
+        "peekOfCode": "app = FastAPI()\napp.mount(\"/static\", StaticFiles(directory=\"Full_Cycle_3.0\"), name=\"static\")\n@app.get(\"/\", response_class=HTMLResponse)\nasync def server_html():\n    html_file_path = Path(__file__).parent / \"index.html\"\n    with open(html_file_path, \"r\", encoding=\"utf-8\") as f:\n        return f.read()\ndef natural_sort_key(text):\n    \"\"\"Ordenação natural para considerar números corretamente\"\"\"\n    return [",
+        "detail": "app.server",
+        "documentation": {}
+    }
+]
