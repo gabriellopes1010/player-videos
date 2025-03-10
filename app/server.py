@@ -6,7 +6,11 @@ import re
 
 app = FastAPI()
 
-app.mount("/static", StaticFiles(directory="Full_Cycle_3.0"), name="static")
+app.mount(
+    "/static",
+    StaticFiles(directory="/mnt/SSD/player_video_project/Full_Cycle_3.0"),
+    name="static",
+)
 
 
 @app.get("/", response_class=HTMLResponse)
