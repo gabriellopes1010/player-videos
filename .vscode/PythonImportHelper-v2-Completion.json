@@ -54,7 +54,7 @@
         "kind": 5,
         "importPath": "app.server",
         "description": "app.server",
-        "peekOfCode": "app = FastAPI()\napp.mount(\n    \"/static\",\n    StaticFiles(directory=\"/mnt/SSD/player_video_project/Full_Cycle_3.0\"),\n    name=\"static\",\n)\n@app.get(\"/\", response_class=HTMLResponse)\nasync def server_html():\n    html_file_path = Path(__file__).parent / \"index.html\"\n    with open(html_file_path, \"r\", encoding=\"utf-8\") as f:",
+        "peekOfCode": "app = FastAPI()\napp.mount(\n    \"/static\",\n    StaticFiles(directory=\"/mnt/SSD/player_video_project/Full_Cycle_3.0\"),\n    name=\"static\",\n)\napp.mount(\"/app\", StaticFiles(directory=\"app/assets/css\"), name=\"app\")\n@app.get(\"/\", response_class=HTMLResponse)\nasync def server_html():\n    html_file_path = Path(__file__).parent / \"index.html\"",
         "detail": "app.server",
         "documentation": {}
     }

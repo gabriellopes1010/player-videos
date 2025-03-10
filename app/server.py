@@ -11,6 +11,7 @@ app.mount(
     StaticFiles(directory="/mnt/SSD/player_video_project/Full_Cycle_3.0"),
     name="static",
 )
+app.mount("/app", StaticFiles(directory="app/assets/css"), name="app")
 
 
 @app.get("/", response_class=HTMLResponse)
