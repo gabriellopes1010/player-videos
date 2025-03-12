@@ -8,8 +8,8 @@
       rel="icon"
       type="image/x-icon"
     />
-    <link rel="stylesheet" type="text/css" href="app/style.css" />
-    <title>Full Cycle 3.0 - Menu de Vídeos</title>
+    <link rel="stylesheet" type="text/css" href="/app/styles.css" />
+    <title>Full Cycle 3.0</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -62,7 +62,6 @@
               </button>
             </div>
           </div>
-
           <!-- Breadcrumbs -->
           <div id="breadcrumbs" class="mb-4 font-semibold"></div>
 
@@ -104,6 +103,34 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal para download de arquivos -->
+    <div
+      id="download-modal"
+      class="hidden fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center"
+    >
+      <div class="bg-white p-6 rounded-lg shadow-lg">
+        <h2 id="modal-title" class="text-xl font-semibold mb-4">
+          Download de Arquivo
+        </h2>
+        <p id="modal-description" class="mb-4">
+          Clique no botão abaixo para baixar o arquivo.
+        </p>
+        <a
+          id="download-link"
+          href="#"
+          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+          >Download</a
+        >
+        <button
+          id="close-modal"
+          class="mt-4 px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-700"
+        >
+          Fechar
+        </button>
+      </div>
+    </div>
+
     <script>
       // Alternar entre modo claro e escuro
       // Adicione essas variáveis para controlar a navegação
@@ -113,12 +140,36 @@
       let videoList = [];
       // Atualize a função loadVideo para armazenar as informações de navegação
 
+      function navigateContent(direction) {
+        if (direction === 1 && currentVideoIndex < videoList.length - 1) {
+          // Próximo vídeo
+          loadVideo(
+            currentModule,
+            currentSection,
+            videoList[currentVideoIndex + 1]
+          );
+        } else if (direction === -1 && currentVideoIndex > 0) {
+          // Vídeo anterior
+          loadVideo(
+            currentModule,
+            currentSection,
+            videoList[currentVideoIndex - 1]
+          );
+        } else if (
+          direction === 1 &&
+          currentVideoIndex >= videoList.length - 1
+        ) {
+          // Próxima seção
+          goToNextSection();
+        }
+      }
+
       // Adicione os eventos de clique dos botões "Anterior" e "Próximo"
       document.addEventListener("DOMContentLoaded", function () {
         document
           .getElementById("prev-button")
           .addEventListener("click", function () {
-            navigateContent(-1);
+            navigateContent(0);
           });
 
         document
@@ -127,6 +178,7 @@
             navigateContent(1);
           });
       });
+
       function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
         localStorage.setItem(
@@ -284,9 +336,20 @@
           `Módulo: ${module}, Seção: ${section}, Índice do Vídeo: ${currentVideoIndex}`
         );
 
-        // Carregar o vídeo
-        videoPlayer.src = `http://localhost:8000/static/${encodedModule}/${encodedSection}/${encodedVideo}`;
-        videoPlayer.play();
+        if (video.endsWith(".mp4")) {
+          // Carregar o vídeo
+          videoPlayer.src = `http://localhost:8000/static/${encodedModule}/${encodedSection}/${encodedVideo}`;
+          videoPlayer.play();
+        } else if (video.endsWith(".zip") || video.endsWith(".txt")) {
+          // Exibir modal de download
+          const downloadLink = document.getElementById("download-link");
+          downloadLink.href = `http://localhost:8000/download/${encodedModule}/${encodedSection}/${encodedVideo}`;
+          document.getElementById("modal-title").textContent = `Download`;
+          document.getElementById(
+            "modal-description"
+          ).textContent = `Clique no botão abaixo para baixar o arquivo - "${video}".`;
+          document.getElementById("download-modal").classList.remove("hidden");
+        }
 
         // Atualiza título do vídeo
         document.getElementById("video-title").textContent = video;
@@ -401,6 +464,11 @@
         .addEventListener("click", () => {
           document.body.style.fontSize = "1rem";
         });
+
+      // Adicionar evento para fechar o modal
+      document.getElementById("close-modal").addEventListener("click", () => {
+        document.getElementById("download-modal").classList.add("hidden");
+      });
 
       // Iniciar a carga de vídeos
       loadVideos();

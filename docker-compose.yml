@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  fastapi:
+    build: ./fastapi
+    container_name: fastapi_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - /mnt/SSD/player_video_project/Full_Cycle_3.0:/mnt/SSD/player_video_project/Full_Cycle_3.0
+      - ./nodejs/public/css:/app/css
+      - ./nodejs/public/index.html:/app/index.html
+
+    restart: always
+
+  nodejs:
+    build: ./nodejs
+    container_name: nodejs_server
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nodejs/public:/app/public
+      - ./nodejs/files:/app/files
+      - /mnt/SSD/player_video_project/Full_Cycle_3.0:/mnt/SSD/player_video_project/Full_Cycle_3.0
+    restart: always

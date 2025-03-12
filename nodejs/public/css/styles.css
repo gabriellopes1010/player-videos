@@ -44,6 +44,11 @@
     padding: 20px;
     overflow-y: auto;
     transition: all 0.3s ease;
+
+    h1{
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
   }
 
   .sidebar.collapsed {
@@ -122,4 +127,15 @@
     display: flex;
     gap: 10px;
   }
-  
+
+  #download-modal {
+    display: none;
+  }
+
+  #download-modal.hidden {
+    display: none;
+  }
+
+  #download-modal.flex {
+    display: flex;
+  }

@@ -1,8 +1,9 @@
-from pathlib import Path
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from fastapi.staticfiles import StaticFiles
 import re
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
 
@@ -11,12 +12,12 @@ app.mount(
     StaticFiles(directory="/mnt/SSD/player_video_project/Full_Cycle_3.0"),
     name="static",
 )
-app.mount("/app", StaticFiles(directory="app/assets/css"), name="app")
+app.mount("/app", StaticFiles(directory="/app/css"), name="css")
 
 
 @app.get("/", response_class=HTMLResponse)
 async def server_html():
-    html_file_path = Path(__file__).parent / "index.html"
+    html_file_path = Path(__file__).parent / "/app/index.html"
     with open(html_file_path, "r", encoding="utf-8") as f:
         return f.read()
 
@@ -57,8 +58,22 @@ async def list_videos():
                 [
                     file.name
                     for file in section.iterdir()
-                    if file.suffix == ".mp4" or ".zip"
+                    if file.suffix in [".mp4", ".zip", ".txt"]
                 ],
             )
 
     return video_data
+
+
+@app.get("/download/{module}/{section}/{filename}")
+async def download_file(module: str, section: str, filename: str):
+    file_path = Path(
+        f"/mnt/SSD/player_video_project/Full_Cycle_3.0/{module}/{section}/{filename}"
+    )
+
+    if file_path.exists() and file_path.is_file():
+        return FileResponse(
+            file_path, media_type="application/octet-stream", filename=filename
+        )
+    else:
+        raise HTTPException(status_code=404, detail="File not found")
