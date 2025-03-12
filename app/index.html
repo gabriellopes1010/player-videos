@@ -17,31 +17,6 @@
   <body id="body">
     <!-- Botão para alternar tema -->
     <div class="content">
-      <div class="top-bar">
-        <button
-          id="toggle-theme"
-          class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700 center"
-        >
-          Alternar Tema
-        </button>
-
-        <!-- Controles de tamanho da fonte -->
-        <div class="font-size-controls">
-          <button
-            id="decrease-font-size"
-            class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-700"
-          >
-            A-
-          </button>
-          <button
-            id="increase-font-size"
-            class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-700"
-          >
-            A+
-          </button>
-        </div>
-      </div>
-
       <div class="flex min-h-screen">
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
@@ -60,6 +35,34 @@
 
         <!-- Conteúdo -->
         <div class="flex-1 p-6">
+          <div class="top-bar flex justify-between items-center">
+            <!-- Botão Alternar Tema (Centralizado) -->
+            <div class="flex-1 text-center">
+              <button
+                id="toggle-theme"
+                class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700"
+              >
+                Alternar Tema
+              </button>
+            </div>
+
+            <!-- Controles de tamanho da fonte (Alinhados à direita) -->
+            <div class="font-size-controls flex space-x-2">
+              <button
+                id="decrease-font-size"
+                class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-700"
+              >
+                A-
+              </button>
+              <button
+                id="increase-font-size"
+                class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-700"
+              >
+                A+
+              </button>
+            </div>
+          </div>
+
           <!-- Breadcrumbs -->
           <div id="breadcrumbs" class="mb-4 font-semibold"></div>
 
@@ -98,46 +101,32 @@
               Salvar Notas
             </button>
           </div>
-
-          <!-- Sumário -->
-          <div id="summary" class="mt-8 hidden">
-            <h2 class="text-xl font-semibold">Sumário do Curso</h2>
-            <table class="summary-table">
-              <thead>
-                <tr>
-                  <th>Categoria</th>
-                  <th>Quantidade</th>
-                  <th>Tamanho</th>
-                  <th>Detalhes</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Total de Arquivos</td>
-                  <td>315</td>
-                  <td>47 GB</td>
-                  <td>-</td>
-                </tr>
-                <tr>
-                  <td>Arquivos de Vídeo</td>
-                  <td>300</td>
-                  <td>47 GB</td>
-                  <td>Duração: 60 horas</td>
-                </tr>
-                <tr>
-                  <td>Arquivos de Texto</td>
-                  <td>15</td>
-                  <td>205 KB</td>
-                  <td>Linhas: 2,958</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
       </div>
     </div>
     <script>
       // Alternar entre modo claro e escuro
+      // Adicione essas variáveis para controlar a navegação
+      let currentModule = "";
+      let currentSection = "";
+      let currentVideoIndex = 0;
+      let videoList = [];
+      // Atualize a função loadVideo para armazenar as informações de navegação
+
+      // Adicione os eventos de clique dos botões "Anterior" e "Próximo"
+      document.addEventListener("DOMContentLoaded", function () {
+        document
+          .getElementById("prev-button")
+          .addEventListener("click", function () {
+            navigateContent(-1);
+          });
+
+        document
+          .getElementById("next-button")
+          .addEventListener("click", function () {
+            navigateContent(1);
+          });
+      });
       function toggleDarkMode() {
         document.body.classList.toggle("dark-mode");
         localStorage.setItem(
@@ -153,10 +142,49 @@
         document.body.classList.add("dark-mode");
       }
 
+      function searchContent() {
+        const searchTerm = document
+          .getElementById("search-input")
+          .value.toLowerCase();
+        const modules = document.querySelectorAll("#video-menu .module");
+
+        modules.forEach((module) => {
+          const sections = module.querySelectorAll(".section");
+          let moduleMatches = false; // Controla se algum vídeo ou seção corresponde ao termo
+
+          sections.forEach((section) => {
+            const videoLinks = section.querySelectorAll("a");
+            let sectionMatches = false; // Controla se alguma aula na seção corresponde ao termo
+
+            videoLinks.forEach((videoLink) => {
+              const videoTitle = videoLink.textContent.toLowerCase();
+
+              if (videoTitle.includes(searchTerm)) {
+                videoLink.style.display = "block"; // Exibe o vídeo correspondente
+                sectionMatches = true;
+              } else {
+                videoLink.style.display = "none"; // Oculta o vídeo que não corresponde
+              }
+            });
+
+            // Se alguma aula na seção corresponde ao termo, a seção será exibida
+            section.style.display = sectionMatches ? "block" : "none";
+
+            // Se alguma seção corresponde, o módulo será exibido
+            if (sectionMatches) {
+              moduleMatches = true;
+            }
+          });
+
+          // Se algum item no módulo ou suas seções corresponder, exibe o módulo
+          module.style.display = moduleMatches ? "block" : "none";
+        });
+      }
+      let data = {};
       // Carregar o menu de vídeos dinamicamente
       async function loadVideos() {
         const response = await fetch("http://localhost:8000/videos");
-        const data = await response.json();
+        data = await response.json();
         const menu = document.getElementById("video-menu");
         menu.innerHTML = ""; // Limpa o conteúdo anterior
 
@@ -238,9 +266,6 @@
         });
       }
 
-      let currentVideoIndex = 0;
-      let videoList = [];
-
       // Carregar o vídeo selecionado
       async function loadVideo(module, section, video) {
         let videoPlayer = document.getElementById("video-player");
@@ -248,6 +273,18 @@
         const encodedSection = encodeURIComponent(section);
         const encodedVideo = encodeURIComponent(video);
 
+        // Atualizando variáveis globais
+        currentModule = module;
+        currentSection = section;
+        videoList = Object.values(data[module][section]);
+        currentVideoIndex = videoList.indexOf(video);
+
+        console.log(`Carregando vídeo: ${video}`);
+        console.log(
+          `Módulo: ${module}, Seção: ${section}, Índice do Vídeo: ${currentVideoIndex}`
+        );
+
+        // Carregar o vídeo
         videoPlayer.src = `http://localhost:8000/static/${encodedModule}/${encodedSection}/${encodedVideo}`;
         videoPlayer.play();
 
@@ -265,27 +302,76 @@
           "breadcrumbs"
         ).textContent = `Módulo: ${module} > Seção: ${section} > Vídeo: ${video}`;
 
-        videoList = Object.values(data[module][section]);
-        currentVideoIndex = videoList.indexOf(video);
-        updateNavigationButtons();
+        // Armazenar a lista de vídeos e o índice do vídeo atual
+        videoList = Object.values(data[module][section]); // Lista de vídeos da seção
+        currentVideoIndex = videoList.indexOf(video); // Índice do vídeo atual
+
+        updateNavigationButtons(); // Atualiza os botões de navegação
       }
 
       function updateNavigationButtons() {
-        document.getElementById("prev-button").disabled =
-          currentVideoIndex <= 0;
-        document.getElementById("next-button").disabled =
-          currentVideoIndex >= videoList.length - 1;
+        const nextButton = document.getElementById("next-button");
+        const prevButton = document.getElementById("prev-button");
+
+        if (currentVideoIndex >= videoList.length - 1) {
+          // Último vídeo da seção, troca o botão "Próximo" por "Próxima Seção"
+          nextButton.textContent = "Próxima Seção";
+          nextButton.onclick = goToNextSection; // Chama a função para ir para a próxima seção
+        } else {
+          // Se não for o último vídeo, mantém a navegação normal
+          nextButton.textContent = "Próximo";
+          nextButton.onclick = () => {
+            loadVideo(
+              currentModule,
+              currentSection,
+              videoList[currentVideoIndex + 1]
+            );
+          };
+        }
+
+        // Desabilitar o botão "Anterior" se for o primeiro vídeo
+        prevButton.disabled = currentVideoIndex <= 0;
+      }
+
+      // Função para navegar para a próxima seção
+      function goToNextSection() {
+        const sections = Object.keys(data[currentModule]);
+        const currentSectionIndex = sections.indexOf(currentSection);
+
+        if (currentSectionIndex < sections.length - 1) {
+          // Se não for a última seção, carregar o primeiro vídeo da próxima seção
+          const nextSection = sections[currentSectionIndex + 1];
+          const firstVideo = data[currentModule][nextSection][0];
+          loadVideo(currentModule, nextSection, firstVideo);
+        } else {
+          // Se for a última seção, ir para o próximo módulo
+          goToNextModule();
+        }
+      }
+
+      // Função para ir para o próximo módulo
+      function goToNextModule() {
+        const modules = Object.keys(data);
+        const currentModuleIndex = modules.indexOf(currentModule);
+
+        if (currentModuleIndex < modules.length - 1) {
+          // Se não for o último módulo, carregar o primeiro vídeo do próximo módulo
+          const nextModule = modules[currentModuleIndex + 1];
+          const firstSection = Object.keys(data[nextModule])[0];
+          const firstVideo = data[nextModule][firstSection][0];
+          loadVideo(nextModule, firstSection, firstVideo);
+        } else {
+          alert("Você chegou ao final do curso!");
+        }
       }
 
       document.getElementById("prev-button").addEventListener("click", () => {
         if (currentVideoIndex > 0) {
-          loadVideo(videoList[currentVideoIndex - 1]);
-        }
-      });
-
-      document.getElementById("next-button").addEventListener("click", () => {
-        if (currentVideoIndex < videoList.length - 1) {
-          loadVideo(videoList[currentVideoIndex + 1]);
+          loadVideo(
+            currentModule,
+            currentSection,
+            videoList[currentVideoIndex - 1]
+          );
         }
       });
 
@@ -307,7 +393,7 @@
       document
         .getElementById("increase-font-size")
         .addEventListener("click", () => {
-          document.body.style.fontSize = "1.2rem";
+          document.body.style.fontSize = "1.4rem";
         });
 
       document

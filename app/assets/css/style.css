@@ -1,6 +1,6 @@
 :root {
-    --primary-color: #34495e;
-    --secondary-color: #1abc9c;
+  --primary-color: #34495e;
+  --secondary-color: #1abc9c;
     --text-color: #333;
     --bg-color: #f7f8fa;
     --sidebar-bg: #34495e;
@@ -122,3 +122,4 @@
     display: flex;
     gap: 10px;
   }
+  
