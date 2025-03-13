@@ -59,19 +59,19 @@
     {
         "label": "natural_sort_key",
         "kind": 2,
-        "importPath": "fastapi.app",
-        "description": "fastapi.app",
+        "importPath": "app.server",
+        "description": "app.server",
         "peekOfCode": "def natural_sort_key(text):\n    \"\"\"Ordenação natural para considerar números corretamente\"\"\"\n    return [\n        int(part) if part.isdigit() else part.lower()\n        for part in re.split(r\"(\\d+)\", text)\n    ]\n@app.get(\"/videos\")\nasync def list_videos():\n    BASE_DIR = Path(\"/mnt/SSD/player_video_project/Full_Cycle_3.0\")\n    video_data = {}",
-        "detail": "fastapi.app",
+        "detail": "app.server",
         "documentation": {}
     },
     {
         "label": "app",
         "kind": 5,
-        "importPath": "fastapi.app",
-        "description": "fastapi.app",
-        "peekOfCode": "app = FastAPI()\napp.mount(\n    \"/static\",\n    StaticFiles(directory=\"/mnt/SSD/player_video_project/Full_Cycle_3.0\"),\n    name=\"static\",\n)\napp.mount(\"/app\", StaticFiles(directory=\"/app/css\"), name=\"css\")\n@app.get(\"/\", response_class=HTMLResponse)\nasync def server_html():\n    html_file_path = Path(__file__).parent / \"/app/index.html\"",
-        "detail": "fastapi.app",
+        "importPath": "app.server",
+        "description": "app.server",
+        "peekOfCode": "app = FastAPI()\napp.mount(\n    \"/static\",\n    StaticFiles(directory=\"/mnt/SSD/player_video_project/Full_Cycle_3.0\"),\n    name=\"static\",\n)\napp.mount(\"/app\", StaticFiles(directory=\"./assets/\"), name=\"app\")\n@app.get(\"/\", response_class=HTMLResponse)\nasync def server_html():\n    html_file_path = Path(__file__).parent / \"index.html\"",
+        "detail": "app.server",
         "documentation": {}
     }
 ]
