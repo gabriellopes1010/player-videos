@@ -3,11 +3,14 @@
   --secondary-color: #1abc9c;
     --text-color: #333;
     --bg-color: #f7f8fa;
-    --sidebar-bg: #34495e;
+    --sidebar-bg: #5198df;
     --content-bg: #ecf0f1;
     --hover-color: #3498db;
     --active-color: #2980b9;
     --border-color: #bdc3c7;
+    transition: all 1s ease;
+
+
   }
 
   .dark-mode {
@@ -20,6 +23,8 @@
     --hover-color: #2980b9;
     --active-color: #3498db;
     --border-color: #7f8c8d;
+    transition: all 1s ease;
+    
   }
 
   body,
@@ -43,7 +48,9 @@
     color: white;
     padding: 20px;
     overflow-y: auto;
-    transition: all 0.3s ease;
+    transition: all 1s ease;
+    max-height: 100vh;
+
 
     h1{
       font-size: 2rem;
@@ -53,6 +60,8 @@
 
   .sidebar.collapsed {
     width: 60px;
+    transition: all 1s ease;
+
   }
 
   .sidebar h2 {
@@ -130,6 +139,11 @@
 
   #download-modal {
     display: none;
+    color: #333;
+  }
+
+  #modal-box {
+    color: #333;
   }
 
   #download-modal.hidden {
