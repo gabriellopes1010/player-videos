@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
-      href="data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAaXWAAACV/wCMAP8AFBcaAAD/qgAnLDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAQBAAEGAAAAAAAAAAAAAAAABgEEAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAABQUAAAACAgIAAAMDAAAABQAABQACAAAAAAADAwAAAAUAAAUAAgICAgADAAADAAAFAAAFAAIAAAIAAwAAAwAAAAUFBQAAAgIAAAMAAAMAAAAAAAUAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQBBgAAAAAAAAAAAAAAAAYBAAEEAAAAAAAAAAAAAAQBAIABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAAA="
+      href="data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAaXWAAACV/wCMAP8AFBcaAAD/qgAnLDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAQBAAEGAAAAAAAAAAAAAAAABgEEAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAABQUAAAACAgIAAAMDAAAABQAABQACAAAAAAADAwAAAAUAAAUAAgICAgADAAADAAAFAAAFAAIAAAIAAwAAAwAAAAUFBQAAAgIAAAMAAAMAAAAAAAUAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQBBgAAAAAAAAAAAAAAAAYBAAEEAAAAAAAAAAAAAAQBAIABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAAA="
       rel="icon"
       type="image/x-icon"
     />
@@ -88,6 +88,10 @@
             <video id="video-player" controls>
               Seu navegador não suporta vídeos.
             </video>
+            <div
+              id="text-content"
+              class="hidden mt-4 w-full p-2 bg-gray-100 rounded"
+            ></div>
             <textarea
               id="user-notes"
               class="mt-4 w-full p-2"
@@ -119,6 +123,7 @@
         <a
           id="download-link"
           href="#"
+          id="download-link"
           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
           >Download</a
         >
@@ -312,6 +317,7 @@
       // Carregar o vídeo selecionado
       async function loadVideo(module, section, video) {
         let videoPlayer = document.getElementById("video-player");
+        let textContent = document.getElementById("text-content");
         const encodedModule = encodeURIComponent(module);
         const encodedSection = encodeURIComponent(section);
         const encodedVideo = encodeURIComponent(video);
@@ -330,18 +336,58 @@
         if (video.endsWith(".mp4")) {
           // Carregar o vídeo
           videoPlayer.src = `/files/${encodedModule}/${encodedSection}/${encodedVideo}`;
+          videoPlayer.style.display = "block";
+          textContent.style.display = "none";
+          document.getElementById("video-container").classList.remove("hidden");
+          document.getElementById("download-link").classList.add("hidden");
+          document.getElementById("user-notes").classList.remove("hidden");
+          document.getElementById("save-notes").classList.remove("hidden");
           videoPlayer.play();
-          document.getElementById("download-modal").classList.add("hidden");
-          document.getElementById("download-modal").classList.remove("fixed");
-        } else if (video.endsWith(".zip") || video.endsWith(".txt")) {
+        } else if (video.endsWith(".txt")) {
+          const downloadLink = document.getElementById("download-link");
+          downloadLink.href = `/files/${encodedModule}/${encodedSection}/${encodedVideo}`;
+          downloadLink.download = video; // Ensure the file is downloaded
+          // Exibir conteúdo de texto
+          const response = await fetch(
+            `/files/${encodedModule}/${encodedSection}/${encodedVideo}`
+          );
+          const text = await response.text();
+          textContent.innerHTML = `<div style="white-space: pre-wrap;">${text}</div>`;
+          textContent.style.display = "block";
+          videoPlayer.style.display = "none";
+          document.getElementById("video-container").classList.remove("hidden");
+          document.getElementById("download-link").classList.remove("hidden");
+          document.getElementById("user-notes").classList.add("hidden");
+          document.getElementById("save-notes").classList.add("hidden");
+
+          // Adicionar botão de download estilizado junto ao botão "Salvar Notas"
+          const downloadButton = document.createElement("a");
+          downloadButton.href = `/files/${encodedModule}/${encodedSection}/${encodedVideo}`;
+          downloadButton.download = video; // Ensure the file is downloaded
+          downloadButton.classList.add(
+            "px-4",
+            "py-2",
+            "bg-blue-500",
+            "text-white",
+            "rounded",
+            "hover:bg-blue-700",
+            "mt-2",
+            "inline-block"
+          );
+          downloadButton.textContent = "Download";
+          document
+            .getElementById("video-container")
+            .appendChild(downloadButton);
+        } else if (video.endsWith(".zip")) {
           // Exibir modal de download
           const downloadLink = document.getElementById("download-link");
           downloadLink.href = `/files/${encodedModule}/${encodedSection}/${encodedVideo}`;
           document.getElementById("modal-title").textContent = `Download`;
+          document.getElementById("download-link").classList.remove("hidden");
           document.getElementById(
             "modal-description"
           ).textContent = `Clique no botão abaixo para baixar o arquivo - "${video}".`;
-          document.getElementById("video-container").classList.remove("hidden");
+          document.getElementById("video-container").classList.add("hidden");
           document.getElementById("download-modal").classList.remove("hidden");
           document.getElementById("download-modal").classList.add("fixed");
 
@@ -446,9 +492,18 @@
       // Salvar notas do usuário
       document.getElementById("save-notes").addEventListener("click", () => {
         var notes = document.getElementById("user-notes").value;
-        var currentVideo = document.getElementById("video-player").src;
+        var currentVideo = document.getElementById("video-title").textContent;
         localStorage.setItem(currentVideo, notes);
         alert("Notas salvas com sucesso!");
+
+        // Gerar arquivo .txt para download com prefixo do nome da aula, sem a extensão .mp4
+        var videoName = currentVideo.replace(".mp4", "");
+        console.log(videoName);
+        var blob = new Blob([notes], { type: "text/plain" });
+        var link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `${videoName}-notas.txt`;
+        link.click();
       });
 
       // Carregar notas salvas
