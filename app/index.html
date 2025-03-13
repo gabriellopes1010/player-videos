@@ -341,7 +341,7 @@
           document.getElementById(
             "modal-description"
           ).textContent = `Clique no botão abaixo para baixar o arquivo - "${video}".`;
-          document.getElementById("video-container").classList.add("hidden");
+          document.getElementById("video-container").classList.remove("hidden");
           document.getElementById("download-modal").classList.remove("hidden");
           document.getElementById("download-modal").classList.add("fixed");
 
@@ -351,13 +351,12 @@
             .addEventListener("click", () => {
               document.getElementById("download-modal").classList.add("hidden");
               document
-                .getElementById("video-container")
-                .classList.remove("hidden");
-
-              document
                 .getElementById("download-modal")
                 .classList.remove("fixed");
             });
+
+          // Limpar o vídeo atual
+          videoPlayer.src = "";
         }
 
         // Atualiza título do vídeo
