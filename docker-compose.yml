@@ -13,13 +13,13 @@ services:
 
     restart: always
 
-  nodejs:
-    build: ./nodejs
-    container_name: nodejs_server
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./nodejs/public:/app/public
-      - ./nodejs/files:/app/files
-      - /mnt/SSD/player_video_project/Full_Cycle_3.0:/mnt/SSD/player_video_project/Full_Cycle_3.0
-    restart: always
+  # nodejs:
+  #   build: ./nodejs
+  #   container_name: nodejs_server
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./nodejs/public:/app/public
+  #     - ./nodejs/files:/app/files
+  #     - /mnt/SSD/player_video_project/Full_Cycle_3.0:/mnt/SSD/player_video_project/Full_Cycle_3.0
+  #   restart: always
