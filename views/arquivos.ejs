@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Arquivos</title>
+</head>
+<body>
+  <h1>Arquivos</h1>
+  <ul>
+    <% arquivos.forEach(function(arquivo) { %>
+      <li>
+        <%= arquivo.nome %>
+        <% if (arquivo.tipo === 'vídeo') { %>
+          <video src="<%= arquivo.caminho %>"></video>
+        <% } else if (arquivo.tipo === 'arquivo') { %>
+          <a href="<%= arquivo.caminho %>">Baixar</a>
+        <% } %>
+      </li>
+    <% }); %>
+  </ul>
+</body>
+</html>
