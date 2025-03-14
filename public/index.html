@@ -4,12 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link
-      href="data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAMDQ0AB9jwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQEBAAAAAAEBAQABAQAAAAABAQAAAAABAQAAAAEAAAAAAQEAAAAAAQEAAAABAAAAAAABAAAAAAEAAAAAAAAAAQAAAQAAAQEBAAABAAAAAAEAAAEAAAEBAQAAAQAAAAABAAABAAAAAAEAAAEAAAAAAQAAAQAAAAABAAABAAAAAAEAAAEAAAAAAQAAAQAAAAABAAABAAAAAAEAAAEAAAAAAQAAAQAAAQEBAAABAAAAAAEAAAEAAAEBAQAAAQAAAAAAAAABAAAAAAEAAAEAAAAAAAABAQAAAAABAAABAAAAAAAAAQEAAAAAAQAAAQAAAAAAAQEBAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="
+      href="data:image/x-icon;base64,AAABAAEAEBAAAAAAAABoBQAAFgAAACgAAAAQAAAAIAAAAAEACAAAAAAAAAEAAAAAAAAAAAAAAAEAAAAAAAAAAAAAaXWAAACV/wCMAP8AFBcaAAD/qgAnLDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEEAAAAAAAAAAAAAAQBAAEGAAAAAAAAAAAAAAAABgEEAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAABQUAAAACAgIAAAMDAAAABQAABQACAAAAAAADAwAAAAUAAAUAAgICAgADAAADAAAFAAAFAAIAAAIAAwAAAwAAAAUFBQAAAgIAAAMAAAMAAAAAAAUAAAAAAAAAAAAAAAAAAAAFAAAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAQBBgAAAAAAAAAAAAAAAAYBAAEEAAAAAAAAAAAAAAQBAIABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIABAAA="
       rel="icon"
       type="image/x-icon"
     />
     <link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
-    <title>Curso Local</title>
+    <title>Full Cycle 3.0</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -36,6 +36,16 @@
         <!-- Conteúdo -->
         <div class="flex-1 p-6">
           <div class="top-bar flex justify-between items-center">
+            <!-- Icon to toggle sidebar -->
+            <div class="top-4 left-4 z-50">
+              <button
+                id="toggle-sidebar"
+                class="px-4 py-2 bg-gray-500 text-white rounded-full hover:bg-gray-700"
+              >
+                &#9776;
+                <!-- Hamburger icon -->
+              </button>
+            </div>
             <!-- Botão Alternar Tema (Centralizado) -->
             <div class="flex-1 text-center">
               <button
@@ -113,7 +123,7 @@
       id="download-modal"
       class="hidden inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center"
     >
-      <div class="bg-white p-6 rounded-lg shadow-lg">
+      <div id="modal-box" class="hidden bg-white p-6 rounded-lg shadow-lg">
         <h2 id="modal-title" class="text-xl font-semibold mb-4">
           Download de Arquivo
         </h2>
@@ -173,6 +183,14 @@
       document.addEventListener("DOMContentLoaded", function () {
         // Certifique-se de que o modal esteja oculto no carregamento da página
         document.getElementById("download-modal").classList.add("hidden");
+
+        // Toggle sidebar visibility
+        document
+          .getElementById("toggle-sidebar")
+          .addEventListener("click", () => {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("hidden");
+          });
       });
 
       function toggleDarkMode() {
@@ -334,16 +352,34 @@
         );
 
         if (video.endsWith(".mp4")) {
+          // Remove the dynamic download button if it exists
+          const dynamicDownloadButton = document.getElementById(
+            "dynamic-download-button"
+          );
+          if (dynamicDownloadButton) {
+            dynamicDownloadButton.remove();
+          }
           // Carregar o vídeo
           videoPlayer.src = `/files/${encodedModule}/${encodedSection}/${encodedVideo}`;
           videoPlayer.style.display = "block";
           textContent.style.display = "none";
           document.getElementById("video-container").classList.remove("hidden");
+          document.getElementById("modal-box").classList.add("hidden");
+          document.getElementById("download-modal").classList.add("hidden");
           document.getElementById("download-link").classList.add("hidden");
           document.getElementById("user-notes").classList.remove("hidden");
           document.getElementById("save-notes").classList.remove("hidden");
           videoPlayer.play();
         } else if (video.endsWith(".txt")) {
+          // Limpar o vídeo atual
+          videoPlayer.src = "";
+          // Remove the dynamic download button if it exists
+          const dynamicDownloadButton = document.getElementById(
+            "dynamic-download-button"
+          );
+          if (dynamicDownloadButton) {
+            dynamicDownloadButton.remove();
+          }
           const downloadLink = document.getElementById("download-link");
           downloadLink.href = `/files/${encodedModule}/${encodedSection}/${encodedVideo}`;
           downloadLink.download = video; // Ensure the file is downloaded
@@ -352,7 +388,7 @@
             `/files/${encodedModule}/${encodedSection}/${encodedVideo}`
           );
           const text = await response.text();
-          textContent.innerHTML = `<div style="white-space: pre-wrap;">${text}</div>`;
+          textContent.innerHTML = `<div style="white-space: pre-wrap; color: #333">${text}</div>`;
           textContent.style.display = "block";
           videoPlayer.style.display = "none";
           document.getElementById("video-container").classList.remove("hidden");
@@ -375,14 +411,25 @@
             "inline-block"
           );
           downloadButton.textContent = "Download";
+          downloadButton.id = "dynamic-download-button"; // Add an ID to the button
           document
             .getElementById("video-container")
             .appendChild(downloadButton);
         } else if (video.endsWith(".zip")) {
+          // Remove the dynamic download button if it exists
+          const dynamicDownloadButton = document.getElementById(
+            "dynamic-download-button"
+          );
+          if (dynamicDownloadButton) {
+            dynamicDownloadButton.remove();
+          }
           // Exibir modal de download
           const downloadLink = document.getElementById("download-link");
           downloadLink.href = `/files/${encodedModule}/${encodedSection}/${encodedVideo}`;
+          downloadLink.download = video; // Ensure the correct file is downloaded
           document.getElementById("modal-title").textContent = `Download`;
+          document.getElementById("download-modal").classList.remove("hidden");
+          document.getElementById("modal-box").classList.remove("hidden");
           document.getElementById("download-link").classList.remove("hidden");
           document.getElementById(
             "modal-description"
@@ -403,6 +450,14 @@
 
           // Limpar o vídeo atual
           videoPlayer.src = "";
+        } else {
+          // Remove the dynamic download button if it exists
+          const dynamicDownloadButton = document.getElementById(
+            "dynamic-download-button"
+          );
+          if (dynamicDownloadButton) {
+            dynamicDownloadButton.remove();
+          }
         }
 
         // Atualiza título do vídeo
