@@ -23,7 +23,7 @@ services:
     #   db:
     #     condition: service_healthy
     volumes:
-      - /opt/Full_Cycle_3.0:/app/src/
+      - /opt/Full_Cycle_3.0:/app/src/asd
     develop:
       watch:
         - action: sync
