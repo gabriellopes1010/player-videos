@@ -123,7 +123,7 @@
       id="download-modal"
       class="hidden inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center"
     >
-      <div id="modal-box" class="bg-white p-6 rounded-lg shadow-lg">
+      <div id="modal-box" class="hidden bg-white p-6 rounded-lg shadow-lg">
         <h2 id="modal-title" class="text-xl font-semibold mb-4">
           Download de Arquivo
         </h2>
@@ -385,7 +385,7 @@
             `/files/${encodedModule}/${encodedSection}/${encodedVideo}`
           );
           const text = await response.text();
-          textContent.innerHTML = `<div style="white-space: pre-wrap;">${text}</div>`;
+          textContent.innerHTML = `<div style="white-space: pre-wrap; color: #333">${text}</div>`;
           textContent.style.display = "block";
           videoPlayer.style.display = "none";
           document.getElementById("video-container").classList.remove("hidden");
@@ -426,6 +426,7 @@
           downloadLink.download = video; // Ensure the correct file is downloaded
           document.getElementById("modal-title").textContent = `Download`;
           document.getElementById("download-modal").classList.remove("hidden");
+          document.getElementById("modal-box").classList.remove("hidden");
           document.getElementById("download-link").classList.remove("hidden");
           document.getElementById(
             "modal-description"
