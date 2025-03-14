@@ -1,4 +1,4 @@
-# Player de Vídeos - Full Cycle 3.0
+# Player de Vídeos
 
 Este projeto é um player de vídeos desenvolvido para o curso Full Cycle 3.0. Ele permite a navegação entre módulos, seções e vídeos, além de oferecer funcionalidades como alternar entre temas claro e escuro, salvar notas e ajustar o tamanho da fonte.
 
