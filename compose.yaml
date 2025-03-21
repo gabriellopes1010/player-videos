@@ -23,7 +23,7 @@ services:
     #   db:
     #     condition: service_healthy
     volumes:
-      - /mnt/SSD/player_video_project/Full_Cycle_3.0:/app/src/
+      - /opt/Full_Cycle_3.0:/app/src/
     develop:
       watch:
         - action: sync
