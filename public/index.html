@@ -47,14 +47,14 @@
               </button>
             </div>
             <!-- Botão Alternar Tema (Centralizado) -->
-            <div class="flex-1 text-center">
-              <button
-                id="toggle-theme"
-                class="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-700"
-              >
-                Alternar Tema
-              </button>
-            </div>
+          <div class="flex-1 text-center">
+            <img
+              id="toggle-theme"
+              src="assets/night-mode.svg"
+              alt="Alternar Tema"
+              class="cursor-pointer w-8 h-8"
+            />
+          </div>
 
             <!-- Controles de tamanho da fonte (Alinhados à direita) -->
             <div class="font-size-controls flex space-x-2">
@@ -189,7 +189,12 @@
           .getElementById("toggle-sidebar")
           .addEventListener("click", () => {
             const sidebar = document.getElementById("sidebar");
-            sidebar.classList.toggle("hidden");
+
+            if (window.innerWidth < 768) {
+              sidebar.classList.toggle("open");
+            } else {
+              sidebar.classList.toggle("collapsed"); 
+            }
           });
       });
 
